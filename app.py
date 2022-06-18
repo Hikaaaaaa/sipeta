@@ -9,10 +9,10 @@ import os
 from modul import Module
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'sipeta'
+app.config['MYSQL_HOST'] = '153.92.10.74'
+app.config['MYSQL_USER'] = 'rootu5030462_sipeta'
+app.config['MYSQL_PASSWORD'] = '&GpQvZp!IOc7'
+app.config['MYSQL_DB'] = 'u5030462_sipeta'
 mysql = MySQL(app)
 
 # init object flask restfull
