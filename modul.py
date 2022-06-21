@@ -8,7 +8,7 @@ class Module(object):
     def __init__(self, path):
         self.df_ = pd.DataFrame(path)
         self.df_ = self.df_.astype({'id': 'int64', 'kapasitas': 'int64', 'dokter': 'int64',
-                                   'harga': 'int64', 'lat': 'float64', 'long': 'float64'})
+                                    'harga': 'int64', 'jarak': 'float64', 'lat': 'float64', 'long': 'float64'})
         self.alternative = self.df_["id"].tolist()
         self.criteria = self.df_.columns.tolist()[2:-2]
         self.maxmin = ["Max", "Max", "Min", "Min"]

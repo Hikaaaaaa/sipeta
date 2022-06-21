@@ -9,10 +9,10 @@ import os
 from modul import Module
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = '153.92.10.74'
-app.config['MYSQL_USER'] = 'rootu5030462_sipeta'
+app.config['MYSQL_HOST'] = 'ghanihika.mysql.pythonanywhere-services.com'
+app.config['MYSQL_USER'] = 'ghanihika'
 app.config['MYSQL_PASSWORD'] = '&GpQvZp!IOc7'
-app.config['MYSQL_DB'] = 'u5030462_sipeta'
+app.config['MYSQL_DB'] = 'ghanihika$sipeta'
 mysql = MySQL(app)
 
 # init object flask restfull
@@ -37,7 +37,7 @@ def petshop():
     petshops = [dict(zip([column[0] for column in cursor.description], row))
                 for row in cursor.fetchall()]
     cursor.close()
-    return jsonify(petshops)
+    return jsonify({'results': petshops})
 
 
 @app.route('/petshop/<id>', methods=['GET'])
@@ -69,8 +69,12 @@ def createPetshop():
     cursor.execute('INSERT INTO petshops (name, capacity, total_employee, latitude, longitude, grooming_price, animal_care_price, address, gmaps_link, open_hours, image_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                    (name, capacity, total_employee, latitude, longitude, grooming_price, animal_care_price, address, gmaps_link, open_hours, image_url))
     mysql.connection.commit()
+    id = cursor.lastrowid
+    cursor.execute('SELECT * FROM petshops WHERE id = %s', (id,))
+    petshop = [dict(zip([column[0] for column in cursor.description], row))
+               for row in cursor.fetchall()]
     cursor.close()
-    return jsonify({'status': 'success'})
+    return jsonify({'status': 'success', 'data': petshop})
 
 
 @app.route('/petshop/<id>', methods=['PUT'])
@@ -125,19 +129,28 @@ def main():
     res = modul.getBobotKriteria(data)
 
     # res =  [2,1,3] to string (2,1,3)
-    query = 'SELECT * FROM petshops WHERE id IN ('
-    for i in range(len(res)):
-        if i == len(res)-1:
-            query += str(res[i])
-        else:
-            query += str(res[i]) + ','
-    query += ')'
-    cursor = mysql.connection.cursor()
-    cursor.execute(query)
-    petshopRecommendation = [dict(zip([column[0] for column in cursor.description], row))
-                             for row in cursor.fetchall()]
-    cursor.close()
-    return jsonify(petshopRecommendation)
+    # query = 'SELECT * FROM petshops WHERE id IN ('
+    # for i in range(len(res)):
+    #     if i == len(res)-1:
+    #         query += str(res[i])
+    #     else:
+    #         query += str(res[i]) + ','
+    # query += ')'
+    # cursor = mysql.connection.cursor()
+    # cursor.execute(query)
+    # petshopRecommendation = [dict(zip([column[0] for column in cursor.description], row))
+    #                          for row in cursor.fetchall()]
+    petshopRecommendation = []
+    for id in res:
+        query = 'SELECT * FROM petshops WHERE id = '+str(id)
+        cursor = mysql.connection.cursor()
+        cursor.execute(query)
+        data = [dict(zip([column[0] for column in cursor.description], row))
+                for row in cursor.fetchall()]
+        cursor.close()
+        petshopRecommendation.extend(data)
+    return jsonify({'results': petshopRecommendation,
+                    'resultsId': res})
 
 
 if __name__ == "__main__":
